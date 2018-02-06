@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xsi:schemaLocation="http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+
+	<!-- Spring과 Mybatis를 사용하는 경우 주로 스프링 설정으로 JDBC연결 처리하는 경우가 많음 -->
+	<!-- <bean id="dataSource" 
+	      class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	    <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>		        
+		<property name="url" value="jdbc:mysql://127.0.0.1:3306/book_ex?useSSL=false"></property>
+		<property name="username" value="sehee"></property>
+		<property name="password" value="235689"></property>
+	</bean> -->
+	
+	<!-- Mybatis의 기존 로그보다 자세히 보여줌 -->
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"></property>
+		<property name="url" value="jdbc:log4jdbc:mysql://127.0.0.1:3306/book_ex?useSSL=false"></property>
+		<property name="username" value="sehee"></property>
+		<property name="password" value="235689"></property>
+	</bean>	
+	
+	<!-- DB연결, SQL실행을 담당하는 중요한 객체 --> 
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:/mybatis-config.xml"></property>
+		<property name="mapperLocations" value="classpath:mappers/**/*Mapper.xml"></property>
+	</bean>
+	
+	<!-- mybatis-spring에서 제공하는 SqlSessionTemplate: 
+	Mybatis의 SqlSession인터페이스를 구현한 클래스로 DB연결과 작업 후 연결 종료를 자동수행, 트랜잭션 관리, 쓰레드 처리의 안정성을 보장 --> 
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate" destroy-method="clearCache">
+		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"></constructor-arg>
+	</bean>
+	
+	<!-- persistence 패키지를 자동 인식 : 하기 패키지 내 @Repository 어노테이션 설정된 클래스를 스캔하여 스프링의 빈으로 등록 -->
+	<context:component-scan base-package="com.javalec.persistence"></context:component-scan>
+	<context:component-scan base-package="com.javalec.service"></context:component-scan>
+    		
+</beans>
