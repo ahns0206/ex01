@@ -37,6 +37,7 @@
  </select>
  
  <!-- 1페이지 당 10개의 데이터만 처리 가능 -->
+ <!-- mybatis-config.xml에 typeAliases설정을 해서 resultType에 com.javalec.domain 생략 가능  -->
  <select id="listPage" resultType="BoardVO">
 	 <![CDATA[
 	 select bno, title, content, writer, regdate, viewcnt 
@@ -50,7 +51,7 @@
  <!-- 각 파라미터에 전달되는 객체: pageStart는 getPageStart(). perPageNum은 getPerPageNum() -->
  <select id="listCriteria" resultType="BoardVO">
 	 <![CDATA[
-	 select bno, title, content, writer, regdate, viewcnt 
+	 select bno, title, content, writer, regdate, viewcnt, replycnt 
 	 from tbl_board 
 	 where bno > 0 
 	 order by bno desc, regdate desc
@@ -79,13 +80,13 @@
      and writer like CONCAT('%', #{keyword}, '%')
    </if>     
    <if test="searchType == 'tc'.toString()">
-     and ( title like CONCAT('%', #{keyword}, '%') OR content like CONCAT('%', #{keyword}, '%'))
+     and (title like CONCAT('%', #{keyword}, '%') OR content like CONCAT('%', #{keyword}, '%'))
    </if>        
    <if test="searchType == 'cw'.toString()">
-     and ( content like CONCAT('%', #{keyword}, '%') OR writer like CONCAT('%', #{keyword}, '%'))
+     and (content like CONCAT('%', #{keyword}, '%') OR writer like CONCAT('%', #{keyword}, '%'))
    </if>        
    <if test="searchType == 'tcw'.toString()">
-     and (   title like CONCAT('%', #{keyword}, '%') 
+     and (title like CONCAT('%', #{keyword}, '%') 
            OR 
              content like CONCAT('%', #{keyword}, '%') 
            OR 
@@ -118,5 +119,13 @@
 	]]>
     <include refid="search"></include> 
 </select>  
+   
+<update id="updateReplyCnt">
+  update tbl_board set replycnt = replycnt + #{amount} where bno = #{bno}
+</update>
+
+<update id="updateViewCnt">
+  update tbl_board set viewcnt = viewcnt +1 where bno = #{bno}
+</update>
   
 </mapper>

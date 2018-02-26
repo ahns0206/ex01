@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<!-- handlebars 테스트 예제 코드 02_handlebars가 지원하는 로직(제어문, 반복문 처리) -->
+
+<!-- handlebars 사용 시, jQuery 라이브러리가 필요하기에 사전에 라이브러리 로딩이 되어야 함 -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+
+
+<ul id="replies">
+</ul>
+
+<!-- {{#each .}}에서 each는 배열의 반복문 순환이며, .은 배열을 도는 동안의 해당 객체를 의미 : arr배열일 시, arr[i]임 -->
+<script id="template" type="text/x-handlebars-template">
+    {{#each .}}
+    <li class="replyLi">
+        <div>{{rno}}</div>
+        <div>{{replytext}}</div>
+        <div>{{replydate}}</div>
+    </li>
+    {{/each}}
+</script>
+
+<script>
+    var source = $("#template").html();
+    var template = Handlebars.compile(source);
+    var data  = [
+        {rno:1, replytext:'1번 댓글....', replydate:new Date()},
+        {rno:2, replytext:'2번 댓글....', replydate:new Date()},
+        {rno:3, replytext:'3번 댓글....', replydate:new Date()},
+        {rno:4, replytext:'4번 댓글....', replydate:new Date()},
+        {rno:5, replytext:'5번 댓글....', replydate:new Date()}
+    ]; //배열
+    $("#replies").html(template(data));
+
+</script>
+</body>
+</html>

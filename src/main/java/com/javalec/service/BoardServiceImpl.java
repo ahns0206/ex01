@@ -5,6 +5,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.javalec.domain.BoardVO;
 import com.javalec.domain.Criteria;
 import com.javalec.domain.SearchCriteria;
@@ -21,9 +24,18 @@ public class BoardServiceImpl implements BoardService {
     dao.create(board);
   }
 
+//@Override
+//public BoardVO read(Integer bno) throws Exception {
+//  return dao.read(bno);
+//}
+
+
+  //트랜잭션 격리수준은 READ_COMMITTED로 커밋하지 않은 데이터는 다른 연결이 볼 수 없음
+  @Transactional(isolation=Isolation.READ_COMMITTED)
   @Override
   public BoardVO read(Integer bno) throws Exception {
-    return dao.read(bno);
+	  dao.updateViewCnt(bno);
+	  return dao.read(bno);
   }
 
   @Override

@@ -14,7 +14,7 @@ public class PageMaker {
   private boolean prev;
   private boolean next;
 
-  private int displayPageNum = 10;
+  private int displayPageNum = 10; //하단에 노출할 페이지 버튼 갯수
 
   private Criteria cri;
 

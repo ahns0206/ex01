@@ -82,7 +82,7 @@
 								<td>${boardVO.bno}</td>
 								<!-- 링크가 필요한 부분에 자동으로 만들어지는 makeSearch()를 적용 -->
 								<td><a href='/sboard/readPage${pageMaker.makeSearch(pageMaker.cri.page) }&bno=${boardVO.bno}'>
-										${boardVO.title} </a></td>
+										${boardVO.title} <strong>[ ${boardVO.replycnt} ]</strong></a></td>
 								<td>${boardVO.writer}</td>
 								<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm"
 										value="${boardVO.regdate}" /></td>
