@@ -33,4 +33,16 @@ public interface BoardDAO {
   
   public void updateViewCnt(Integer bno)throws Exception;
   
+  //첨부파일 생성
+  public void addAttach(String fullName)throws Exception;
+  
+  //게시물 번호에 속하는 모든 첨부파일 조회
+  public List<String> getAttach(Integer bno)throws Exception;  
+  
+  //게시물 번호에 속하는 모든 첨부파일 삭제
+  public void deleteAttach(Integer bno)throws Exception;
+  
+  //수정된 상태의 파일 이름과 기등록 게시물 번호로 tbl_attach내 새 첨부파일 정보 생성
+  public void replaceAttach(String fullName, Integer bno)throws Exception;
+  
 }

@@ -1,5 +1,6 @@
 package com.javalec.domain;
 
+import java.util.Arrays;
 import java.util.Date;
 
 //테이블 구조를 객체화 시킬때 사용
@@ -13,6 +14,15 @@ public class BoardVO {
 	private int viewcnt;
 	private int replycnt;
 	
+	private String[] files;
+	
+
+	public String[] getFiles() {
+		return files;
+	}
+	public void setFiles(String[] files) {
+		this.files = files;
+	}
 	public int getReplycnt() {
 	  return replycnt;
 	}
@@ -57,11 +67,13 @@ public class BoardVO {
 	public void setViewcnt(int viewcnt) {
 		this.viewcnt = viewcnt;
 	}
-	
+
 	@Override
 	public String toString() {
-		return "BoardVO [bno=" + bno + ", title=" + title + ", content=" + content + ", writer=" + writer + ", regdate="
-	    + regdate + ", viewcnt=" + viewcnt + ", replycnt=" + replycnt + "]";
+		return "BoardVO [bno=" + bno + ", title=" + title + ", content="
+				+ content + ", writer=" + writer + ", regdate=" + regdate
+				+ ", viewcnt=" + viewcnt + ", replycnt=" + replycnt
+				+ ", files=" + Arrays.toString(files) + "]";
 	}
 
 }

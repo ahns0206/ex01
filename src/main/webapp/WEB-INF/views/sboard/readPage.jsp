@@ -3,7 +3,32 @@
 
 <%@include file="../include/header.jsp"%>
 
+<script type="text/javascript" src="/resources/js/upload.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+
 <!-- Main content -->
+<!-- 하기 div에 적용되는 css -->
+<style type="text/css">
+	.popup {position: absolute;}
+	.back { background-color: gray; opacity:0.5; width: 100%; height: 300%; overflow:hidden;  z-index:1101;}
+	.front { 
+	   z-index:1110; opacity:1; boarder:1px; margin: auto; 
+	  }
+	 .show{
+	   position:relative;
+	   max-width: 1200px; 
+	   max-height: 800px; 
+	   overflow: auto;       
+	 }
+</style>
+
+<!-- 첨부된 이미지 파일의 이미지 파일명 클릭 시, 화면 전환되며 맨앞에 보이기 위한 숨겨진 div-->
+<div class='popup back' style="display:none;"></div>
+<div id="popup_front" class='popup front' style="display:none;">
+	<img id="popup_img">
+</div>
+
+
 <section class="content">
 	<div class="row">
 		<!-- left column -->
@@ -43,6 +68,9 @@
 					</div>
 				</div>
 				<!-- /.box-body -->
+				
+				<!-- 업로드 된 파일들이 보여질 영역 -->
+				<ul class="mailbox-attachments clearfix uploadedList"></ul>
 
 				<div class="box-footer">
 					<button type="submit" class="btn btn-warning">Modify</button>
@@ -154,6 +182,18 @@
 	
 </section>
 <!-- /.content -->
+
+<!-- 조회 화면의 경우 썸네일에 삭제 버튼 없음 -->
+<script id="templateAttach" type="text/x-handlebars-template">
+<li data-src='{{fullName}}'>
+  <span class="mailbox-attachment-icon has-img"><img src="{{imgsrc}}" alt="Attachment"></span>
+  <div class="mailbox-attachment-info">
+	<a href="{{getLink}}" class="mailbox-attachment-name">{{fileName}}</a>
+	</span>
+  </div>
+</li>                
+</script>  
+
 
 <!-- 화면상에서 하나의 댓글을 구성하는 부분 
 	 {{prettifyDate regdate}} : 데이터 처리를 위해 handlebar기능 확장한 것 -->
@@ -359,7 +399,27 @@ $(document).ready(function(){
 	});
 	
 	$("#removeBtn").on("click", function(){
-		formObj.attr("action", "/sboard/removePage");
+		
+		var replyCnt =  $("#replycntSmall").html();
+		
+		if(replyCnt > 0 ){
+			alert("댓글이 달린 게시물을 삭제할 수 없습니다.");
+			return;
+		}	
+		
+		var arr = [];
+		$(".uploadedList li").each(function(index){
+			 arr.push($(this).attr("data-src"));
+		}); //현재 첨부파일 이름을 배열로 작성
+		
+		if(arr.length > 0){
+			$.post("/deleteAllFiles",{files:arr}, function(){
+				
+			});
+		} //uploadController에 Ajax방식으로 첨부파일 삭제 지시
+		
+		formObj.attr("action", "/sboard/removePage");//첨부파일 삭제 후, <form>태그로 db내 게시물 삭제하기에 response코드 안 기다리고 db내 게시물 삭제
+		
 		formObj.submit();
 	});
 	
@@ -368,6 +428,47 @@ $(document).ready(function(){
 		formObj.attr("action", "/sboard/list");
 		formObj.submit();
 	});
+
+	var bno = ${boardVO.bno};
+	var template = Handlebars.compile($("#templateAttach").html());
+	
+	$.getJSON("/sboard/getAttach/"+bno,function(list){
+		$(list).each(function(){
+			
+			var fileInfo = getFileInfo(this);
+			
+			var html = template(fileInfo);
+			
+			 $(".uploadedList").append(html);
+			
+		});
+	});
+	
+	//사용자가 첨부파일의 제목 클릭 시 이벤트 발생
+	$(".uploadedList").on("click", ".mailbox-attachment-info a", function(event){
+		
+		var fileLink = $(this).attr("href");
+		
+		if(checkImageType(fileLink)){ 
+			
+			event.preventDefault();
+					
+			var imgTag = $("#popup_img");
+			imgTag.attr("src", fileLink); //클릭된 이미지 경로를 id 속성값이 "popup_img"인 요소에 추가
+			
+			console.log(imgTag.attr("src"));
+					
+			$(".popup").show('slow'); //화면에 보이게 show 호출
+			imgTag.addClass("show");
+		}	
+	});
+	
+	//팝업 이미지 사용자가 클릭 시, 이미지 사라짐
+	$("#popup_img").on("click", function(){
+		
+		$(".popup").hide('slow');
+		
+	});	
 	
 });
 </script>
